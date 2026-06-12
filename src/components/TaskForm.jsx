@@ -3,17 +3,26 @@ import { TaskContext } from "../context/TaskContext";
 
 function TaskForm() {
   const [taskName, setTaskName] = useState("");
+  const taskInputId = useId();
+  const { addTask } = useContext(TaskContext);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (taskName.trim() === "") return;
+    const trimmedTaskName = taskName.trim();
+
+    // Ignore empty submissions so the list only receives real task titles.
+    if (trimmedTaskName === "") return;
+
+    await addTask(trimmedTaskName);
     setTaskName("");
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      <label>New Task:</label>
+      {/* useId keeps the label and input connected without manually managing a static id. */}
+      <label htmlFor={taskInputId}>New Task:</label>
       <input
+        id={taskInputId}
         type="text"
         value={taskName}
         onChange={(e) => setTaskName(e.target.value)}
